@@ -59,16 +59,23 @@ header {
     border-radius: 5px;
 }
 
-.error-container h2 {
-    color: #c53030;
-    margin-bottom: 1rem;
+.post.error {
+    border-color: #feb2b2;
+    background-color: #fff5f5;
 }
 
-.error-container pre {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 3px;
-    overflow-x: auto;
-    margin: 0.5rem 0;
+.post.error .post-title {
+    color: #c53030;
+}
+
+.post time {
+    color: #666;
     font-size: 0.9rem;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
