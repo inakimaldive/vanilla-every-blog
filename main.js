@@ -14,11 +14,17 @@ const POSTS = [
 
 async function fetchPosts() {
     try {
-        const repoBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? '' 
-            : '/vanilla-every-blog';
+        // Determine if we're on GitHub Pages or localhost
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        const repoBase = isGitHubPages 
+            ? 'https://inakimaldive.github.io/vanilla-every-blog'
+            : '';
             
-        console.log('Loading posts from:', `${repoBase}/posts/`);
+        console.log('Environment:', {
+            hostname: window.location.hostname,
+            isGitHubPages,
+            repoBase
+        });
         
         // Sort posts by date (newest first)
         const sortedPosts = [...POSTS].sort((a, b) => 
@@ -29,12 +35,23 @@ async function fetchPosts() {
         const postContents = await Promise.all(
             sortedPosts.map(async post => {
                 try {
-                    const response = await fetch(`${repoBase}/posts/${post.path}`);
+                    const postUrl = `${repoBase}/posts/${post.path}`;
+                    console.log(`Fetching post from: ${postUrl}`);
+                    
+                    const response = await fetch(postUrl);
+                    console.log(`Fetch response for ${post.path}:`, {
+                        status: response.status,
+                        ok: response.ok,
+                        statusText: response.statusText
+                    });
+                    
                     if (!response.ok) {
-                        console.error(`Failed to fetch ${post.path}: ${response.status}`);
-                        return null;
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
+                    
                     const content = await response.text();
+                    console.log(`Content received for ${post.path}:`, content.substring(0, 100) + '...');
+                    
                     return { content, date: post.date };
                 } catch (error) {
                     console.error(`Error fetching ${post.path}:`, error);
@@ -118,9 +135,27 @@ async function init() {
                 <p>Technical details:</p>
                 <pre>${error.stack}</pre>
                 <p>Current location: ${window.location.href}</p>
-                <p>Repository base: ${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                    ? 'localhost' 
-                    : '/vanilla-every-blog'}</p>
+                <p>Hostname: ${window.location.hostname}</p>
+                <p>Is GitHub Pages: ${window.location.hostname.includes('github.io')}</p>
+                <p>Repository base: ${window.location.hostname.includes('github.io') 
+                    ? 'https://inakimaldive.github.io/vanilla-every-blog'
+                    : '(local)'}</p>
+                <p>First post URL: ${window.location.hostname.includes('github.io')
+                    ? 'https://inakimaldive.github.io/vanilla-every-blog/posts/2025-07-22-15-30.md'
+                    : '/posts/2025-07-22-15-30.md'}</p>
+                <div class="test-links">
+                    <p>Test links:</p>
+                    <ul>
+                        ${POSTS.map(post => `
+                            <li>
+                                <a href="${window.location.hostname.includes('github.io')
+                                    ? 'https://inakimaldive.github.io/vanilla-every-blog/posts/' + post.path
+                                    : '/posts/' + post.path}" 
+                                   target="_blank">${post.path}</a>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
             </div>
         `;
     }

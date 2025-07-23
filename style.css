@@ -57,6 +57,39 @@ header {
     background-color: #fff5f5;
     border: 1px solid #feb2b2;
     border-radius: 5px;
+    font-family: monospace;
+}
+
+.error-container pre {
+    background: #fff;
+    padding: 1rem;
+    overflow-x: auto;
+    border-radius: 3px;
+}
+
+.error-container .test-links {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 3px;
+}
+
+.error-container .test-links ul {
+    list-style: none;
+    padding: 0;
+}
+
+.error-container .test-links li {
+    margin: 0.5rem 0;
+}
+
+.error-container .test-links a {
+    color: #2b6cb0;
+    text-decoration: none;
+}
+
+.error-container .test-links a:hover {
+    text-decoration: underline;
 }
 
 .post.error {
