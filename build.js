@@ -14,11 +14,16 @@ const postTemplate = (title, date, tags, content) => `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
+    <title>${title} - My Blog</title>
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-    <main>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../" class="nav-brand">My Blog</a>
+        </div>
+    </nav>
+    <main class="container">
         <article class="post">
             <header class="post-header">
                 <h1 class="post-title">${title}</h1>
@@ -35,6 +40,9 @@ const postTemplate = (title, date, tags, content) => `
                 ${content}
             </div>
         </article>
+        <footer class="post-footer">
+            <a href="../">← Back to Home</a>
+        </footer>
     </main>
 </body>
 </html>
@@ -100,7 +108,13 @@ async function build() {
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main id="posts">
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="nav-brand">My Blog</a>
+        </div>
+    </nav>
+    <main id="posts" class="container">
+        <h1>Latest Posts</h1>
         ${validPosts.map(post => `
             <article class="post">
                 <header class="post-header">
