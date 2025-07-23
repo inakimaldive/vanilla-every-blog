@@ -1,0 +1,10 @@
+{
+  "name": "vanilla-every-blog",
+  "version": "1.0.0",
+  "description": "A simple blog system using vanilla JavaScript and GitHub Pages",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js",
+    "dev": "python3 -m http.server 8080"
+  }
+}

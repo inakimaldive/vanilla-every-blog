@@ -1,28 +1,53 @@
 import { parseFrontMatter } from './utils/frontMatterParser.js';
 import { parseMarkdown } from './utils/markdownParser.js';
 
-async function loadPostIndex() {
+async function loadPosts() {
     try {
         const isGitHubPages = window.location.hostname.includes('github.io');
         const repoBase = isGitHubPages 
-            ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main'
-            : '';
-        
-        const indexUrl = `${repoBase}/posts/index.json`;
-        const response = await fetch(indexUrl);
-        
-        if (!response.ok) {
-            throw new Error(`Failed to load post index: ${response.status} ${response.statusText}`);
+            ? 'https://api.github.com/repos/inakimaldive/vanilla-every-blog/contents/posts'
+            : '/posts';
+            
+        if (isGitHubPages) {
+            // Use GitHub API to list directory contents
+            const response = await fetch(repoBase);
+            if (!response.ok) {
+                throw new Error(`Failed to load posts directory: ${response.status} ${response.statusText}`);
+            }
+            
+            const files = await response.json();
+            return files
+                .filter(file => file.name.endsWith('.md'))
+                .map(file => ({
+                    path: file.name,
+                    date: file.name.substring(0, 19).replace(/-/g, ':') + 'Z'
+                }));
+        } else {
+            // Local development - use fetch to get directory listing
+            const response = await fetch('/posts');
+            if (!response.ok) {
+                throw new Error(`Failed to load posts directory: ${response.status} ${response.statusText}`);
+            }
+            
+            const html = await response.text();
+            // Parse the directory listing HTML to get .md files
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = Array.from(doc.querySelectorAll('a'));
+            
+            return links
+                .map(link => link.href)
+                .filter(href => href.endsWith('.md'))
+                .map(href => {
+                    const filename = href.split('/').pop();
+                    return {
+                        path: filename,
+                        date: filename.substring(0, 19).replace(/-/g, ':') + 'Z'
+                    };
+                });
         }
-        
-        const { posts } = await response.json();
-        // Convert file names to post objects with date extracted from filename
-        return posts.map(filename => ({
-            path: filename,
-            date: filename.substring(0, 19).replace(/-/g, ':') + 'Z' // Convert YYYY-MM-DD-HH-MM to ISO date
-        }));
     } catch (error) {
-        console.error('Error loading post index:', error);
+        console.error('Error loading posts:', error);
         throw error;
     }
 }
