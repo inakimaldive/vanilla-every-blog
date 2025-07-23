@@ -50,3 +50,25 @@ header {
     border-radius: 3px;
     font-size: 0.8rem;
 }
+
+.error-container {
+    padding: 1rem;
+    margin: 1rem 0;
+    background-color: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 5px;
+}
+
+.error-container h2 {
+    color: #c53030;
+    margin-bottom: 1rem;
+}
+
+.error-container pre {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 3px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+}

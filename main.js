@@ -8,12 +8,18 @@ async function fetchPosts() {
             ? '' 
             : '/vanilla-every-blog';
             
+        console.log('Fetching from base:', repoBase);
+        console.log('Full URL:', `${repoBase}/posts/index.json`);
+            
         const indexResponse = await fetch(`${repoBase}/posts/index.json`);
         if (!indexResponse.ok) {
-            throw new Error('Failed to fetch posts index');
+            throw new Error(`Failed to fetch posts index. Status: ${indexResponse.status} - ${indexResponse.statusText}`);
         }
         
-        const { posts } = await indexResponse.json();
+        const indexText = await indexResponse.text();
+        console.log('Index content:', indexText);
+        
+        const { posts } = JSON.parse(indexText);
         
         // Fetch each post's content
         const postContents = await Promise.all(
@@ -110,7 +116,18 @@ async function init() {
         });
     } catch (error) {
         console.error('Error loading posts:', error);
-        postsContainer.innerHTML = '<p>Error loading posts. Please try again later.</p>';
+        postsContainer.innerHTML = `
+            <div class="error-container">
+                <h2>Error loading posts</h2>
+                <p>${error.message}</p>
+                <p>Technical details:</p>
+                <pre>${error.stack}</pre>
+                <p>Current location: ${window.location.href}</p>
+                <p>Repository base: ${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'localhost' 
+                    : '/vanilla-every-blog'}</p>
+            </div>
+        `;
     }
 }
 
