@@ -1,16 +1,31 @@
 import { parseFrontMatter } from './utils/frontMatterParser.js';
 import { parseMarkdown } from './utils/markdownParser.js';
 
-const POSTS = [
-    {
-        path: '2025-07-21-15-30.md',
-        date: '2025-07-21T15:30:00Z'
-    },
-    {
-        path: '2025-07-22-15-30.md',
-        date: '2025-07-22T15:30:00Z'
+async function loadPostIndex() {
+    try {
+        const isGitHubPages = window.location.hostname.includes('github.io');
+        const repoBase = isGitHubPages 
+            ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main'
+            : '';
+        
+        const indexUrl = `${repoBase}/posts/index.json`;
+        const response = await fetch(indexUrl);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to load post index: ${response.status} ${response.statusText}`);
+        }
+        
+        const { posts } = await response.json();
+        // Convert file names to post objects with date extracted from filename
+        return posts.map(filename => ({
+            path: filename,
+            date: filename.substring(0, 19).replace(/-/g, ':') + 'Z' // Convert YYYY-MM-DD-HH-MM to ISO date
+        }));
+    } catch (error) {
+        console.error('Error loading post index:', error);
+        throw error;
     }
-];
+}
 
 async function fetchPosts() {
     try {
@@ -26,8 +41,11 @@ async function fetchPosts() {
             repoBase
         });
         
+        // Load posts from index.json
+        const posts = await loadPostIndex();
+        
         // Sort posts by date (newest first)
-        const sortedPosts = [...POSTS].sort((a, b) => 
+        const sortedPosts = [...posts].sort((a, b) => 
             new Date(b.date).getTime() - new Date(a.date).getTime()
         );
 
@@ -140,13 +158,13 @@ async function init() {
                 <p>Repository base: ${window.location.hostname.includes('github.io') 
                     ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main'
                     : '(local)'}</p>
-                <p>First post URL: ${window.location.hostname.includes('github.io')
-                    ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main/posts/2025-07-22-15-30.md'
-                    : '/posts/2025-07-22-15-30.md'}</p>
+                <p>Index JSON URL: ${window.location.hostname.includes('github.io')
+                    ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main/posts/index.json'
+                    : '/posts/index.json'}</p>
                 <div class="test-links">
                     <p>Test links:</p>
                     <ul>
-                        ${POSTS.map(post => `
+                        ${(posts || []).map(post => `
                             <li>
                                 <a href="${window.location.hostname.includes('github.io')
                                     ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main/posts/' + post.path
