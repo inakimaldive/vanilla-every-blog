@@ -17,7 +17,7 @@ async function fetchPosts() {
         // Determine if we're on GitHub Pages or localhost
         const isGitHubPages = window.location.hostname.includes('github.io');
         const repoBase = isGitHubPages 
-            ? 'https://inakimaldive.github.io/vanilla-every-blog'
+            ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main'
             : '';
             
         console.log('Environment:', {
@@ -138,10 +138,10 @@ async function init() {
                 <p>Hostname: ${window.location.hostname}</p>
                 <p>Is GitHub Pages: ${window.location.hostname.includes('github.io')}</p>
                 <p>Repository base: ${window.location.hostname.includes('github.io') 
-                    ? 'https://inakimaldive.github.io/vanilla-every-blog'
+                    ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main'
                     : '(local)'}</p>
                 <p>First post URL: ${window.location.hostname.includes('github.io')
-                    ? 'https://inakimaldive.github.io/vanilla-every-blog/posts/2025-07-22-15-30.md'
+                    ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main/posts/2025-07-22-15-30.md'
                     : '/posts/2025-07-22-15-30.md'}</p>
                 <div class="test-links">
                     <p>Test links:</p>
@@ -149,7 +149,7 @@ async function init() {
                         ${POSTS.map(post => `
                             <li>
                                 <a href="${window.location.hostname.includes('github.io')
-                                    ? 'https://inakimaldive.github.io/vanilla-every-blog/posts/' + post.path
+                                    ? 'https://raw.githubusercontent.com/inakimaldive/vanilla-every-blog/main/posts/' + post.path
                                     : '/posts/' + post.path}" 
                                    target="_blank">${post.path}</a>
                             </li>
