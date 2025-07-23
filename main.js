@@ -2,31 +2,42 @@ import { parseFrontMatter } from './utils/frontMatterParser.js';
 import { parseMarkdown } from './utils/markdownParser.js';
 
 async function fetchPosts() {
-    // First, fetch a list of available posts
-    const posts = [
-        '/posts/2025-07-21-15-30.md',
-        '/posts/2025-07-22-15-30.md'
-    ];
-    
-    // Fetch each post's content
-    const postContents = await Promise.all(
-        posts.map(async postPath => {
-            try {
-                const response = await fetch(postPath);
-                if (!response.ok) {
-                    console.error(`Failed to fetch ${postPath}`);
+    try {
+        // First, fetch the posts index
+        const repoBase = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? '' 
+            : '/vanilla-every-blog';
+            
+        const indexResponse = await fetch(`${repoBase}/posts/index.json`);
+        if (!indexResponse.ok) {
+            throw new Error('Failed to fetch posts index');
+        }
+        
+        const { posts } = await indexResponse.json();
+        
+        // Fetch each post's content
+        const postContents = await Promise.all(
+            posts.map(async postName => {
+                try {
+                    const response = await fetch(`${repoBase}/posts/${postName}`);
+                    if (!response.ok) {
+                        console.error(`Failed to fetch ${postName}`);
+                        return null;
+                    }
+                    return await response.text();
+                } catch (error) {
+                    console.error(`Error fetching ${postName}:`, error);
                     return null;
                 }
-                return await response.text();
-            } catch (error) {
-                console.error(`Error fetching ${postPath}:`, error);
-                return null;
-            }
-        })
-    );
+            })
+        );
 
-    // Filter out any failed fetches
-    return postContents.filter(content => content !== null);
+        // Filter out any failed fetches
+        return postContents.filter(content => content !== null);
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        return [];
+    }
 }
 
 function renderPost(content) {

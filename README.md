@@ -27,12 +27,23 @@ vanilla-every-blog/
    cd vanilla-every-blog
    ```
 
-2. Start a local server:
+2. Choose how to serve the blog:
+
+   ### Local Development
+   Start a local server:
    ```bash
    python3 -m http.server
    ```
+   Open http://localhost:8000 in your browser
 
-3. Open http://localhost:8000 in your browser
+   ### GitHub Pages Deployment
+   1. Go to your repository settings
+   2. Navigate to "Pages" section
+   3. Select "Deploy from a branch"
+   4. Choose "main" branch and "/ (root)" folder
+   5. Click "Save"
+   
+   Your blog will be available at `https://YOUR_USERNAME.github.io/vanilla-every-blog`
 
 ## 📝 Blog Post Format
 
